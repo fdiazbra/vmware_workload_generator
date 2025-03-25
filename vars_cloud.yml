@@ -1,0 +1,5 @@
+vcenter_hostname: ""
+vcenter_datacenter: ""
+vcenter_username: ""
+vcenter_validate_certs: false
+vcenter_cluster: ""

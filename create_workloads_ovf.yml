@@ -1,0 +1,34 @@
+---
+- name: create multiple VMs
+  hosts: localhost
+  become: false
+  gather_facts: false
+  
+  vars_files:
+    - vars_cloud.yml
+  
+  tasks:
+    - name: Check that the ova exists
+      stat:
+        path: /tmp/ubuntu-22.04-server-cloudimg-amd64.ova
+      register: stat_result
+
+    - name: Download file with check (md5)
+      ansible.builtin.get_url:
+        url: https://cloud-images.ubuntu.com/releases/jammy/release/ubuntu-22.04-server-cloudimg-amd64.ova
+        dest: /tmp/ubuntu-22.04-server-cloudimg-amd64.ova
+        checksum: md5:c78565d99e42480a594125296f0e0b00
+      when: not stat_result.stat.exists
+
+    - name: create VM
+      community.vmware.vmware_deploy_ovf:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        datacenter: "{{ vcenter_datacenter }}"
+        cluster: "{{ vcenter_cluster }}"
+        resource_pool: osmigrate-resources-pool 
+        name: ubuntu-22.04-server-from-ova
+        datastore: datastore1 (1)
+        validate_certs: "{{ vcenter_validate_certs }}"
+        ovf: /tmp/ubuntu-22.04-server-cloudimg-amd64.ova

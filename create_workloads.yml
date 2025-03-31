@@ -9,36 +9,41 @@
     - vars_workloads.yml
   
   tasks:
-    - name: create folder
+    - name: Create A Folder 
       community.vmware.vcenter_folder:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
         password: "{{ vcenter_password }}"
-        validate_certs: "{{ vcenter_validate_certs }}"
         datacenter: "{{ vcenter_datacenter }}"
-        folder_name: "{{ vcenter_destination_folder }}"
+        folder_name: rhel
         folder_type: vm
+        validate_certs: false
         state: present
-    - name: create VM
+      register: datastore_folder_creation_result
+
+    - name: print folder result
+      debug:
+        msg: "{{ datastore_folder_creation_result }}"
+
+    - name: create VMs
       community.vmware.vmware_guest:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
         password: "{{ vcenter_password }}"
+        folder: "{{ vcenter_destination_folder }}"
         validate_certs: "{{ vcenter_validate_certs }}"
         datacenter: "{{ vcenter_datacenter }}"
-        template: "{{ vm_template }}"
-        name: "{{ item.vm_name }}"
-        folder: "{{ vcenter_destination_folder }}"
-        guest_id: "{{ vm_guest_id }}"
         cluster: "{{ vcenter_cluster }}"
+        name: "{{ item.vm_name }}"
+        template: "{{ item.vm_guest_template }}"
         disk:
           - size_gb: "{{ item.vm_disk_gb }}"
-            type: "{{ vm_disk_type }}"
-            datastore: "{{ vm_disk_datastore }}"
+            type: "{{ item.vm_disk_type }}"
+            datastore: "{{ item.vm_disk_datastore }}"
         hardware:
-          memory_mb: "{{ vm_hw_ram_mb }}"
-          num_cpus: "{{ vm_hw_cpu_n }}"
-          scsi: "{{ vm_hw_scsi }}"
+          memory_mb: "{{ item.vm_hw_ram_mb }}"
+          num_cpus: "{{ item.vm_hw_cpu_n }}"
+          scsi: "{{ item.vm_hw_scsi }}"
         networks:
           - name: "{{ item.vm_net_name }}"
       with_items: "{{ vms }}"

@@ -1,15 +1,11 @@
-vm_guest_id: "centos"
-vm_disk_type: "thin"
-vm_disk_datastore: "Test_datastore"
-vm_hw_ram_mb : 4096
-vm_hw_cpu_n: 4
-vm_hw_scsi: "paravirtual"
-vcenter_destination_folder: "Ansible"
-vm_template: "centos_template"
+vcenter_destination_folder: "rhel"
 vms:
-   - vm_name: "centos_test_1"
+   - vm_name: "rhel-9.4-1-vm1"
+     vm_guest_template: "rhel9.4-1"
      vm_disk_gb: "50"
-     vm_net_name: "VLAN10"
-   - vm_name: "centos_test_2"
-     vm_disk_gb: "100"
-     vm_net_name: "VLAN10"
+     vm_net_name: "VM Network"
+     vm_disk_type: "thin"
+     vm_disk_datastore: "datastore1 (1)"
+     vm_hw_ram_mb : 4096
+     vm_hw_cpu_n: 4
+     vm_hw_scsi: "paravirtual"
